@@ -36,11 +36,11 @@ export default function Contact({ user }) {
 
             <div className="max-w-5xl mx-auto px-4 sm:px-6 lg:px-8 relative z-10">
                 
-                {/* Kartu Utama Glassmorphism dengan Animasi Muncul */}
+                {/* Kartu Utama Glassmorphism dengan Animasi Muncul Berulang */}
                 <motion.div 
                     initial={{ opacity: 0, y: 50 }}
                     whileInView={{ opacity: 1, y: 0 }}
-                    viewport={{ once: true }}
+                    viewport={{ once: false, amount: 0.3 }} // <-- UBAH KE FALSE
                     transition={{ duration: 0.8, ease: "easeOut" }}
                     className="bg-gray-800/40 backdrop-blur-xl rounded-3xl p-8 md:p-16 border border-gray-700 shadow-2xl relative overflow-hidden text-center"
                 >
@@ -57,12 +57,12 @@ export default function Contact({ user }) {
                         Saya selalu terbuka untuk terhubung dengan Anda.
                     </p>
                     
-                    {/* Container Tombol dengan Stagger Effect */}
+                    {/* Container Tombol dengan Stagger Effect Berulang */}
                     <motion.div 
                         variants={containerVariants}
                         initial="hidden"
                         whileInView="visible"
-                        viewport={{ once: true }}
+                        viewport={{ once: false }} // <-- UBAH KE FALSE
                         className="flex flex-wrap justify-center gap-6"
                     >
                         
