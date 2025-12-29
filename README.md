@@ -13,23 +13,31 @@ Proyek ini menggunakan **Laravel** sebagai backend API/Framework dan **React.js*
 **Frontend:**
 * [React.js](https://reactjs.org/)
 * [Vite](https://vitejs.dev/) (Build tool)
-* [Tailwind CSS](https://tailwindcss.com/) (Styling - *Opsional, hapus jika tidak pakai*)
+* [Tailwind CSS](https://tailwindcss.com/) (Styling)
 
-## 📋 Prasyarat (Prerequisites)
+## 📋 Prasyarat
 
-Sebelum memulai, pastikan komputer Anda telah terinstal:
-* [PHP](https://www.php.net/) >= 8.1
-* [Composer](https://getcomposer.org/)
-* [Node.js](https://nodejs.org/) & NPM
+Pastikan telah terinstal: `PHP >= 8.1`, `Composer`, `Node.js`, dan `MySQL`.
 
-## ⚙️ Cara Instalasi (Installation)
+## ⚡ Quick Start (Instalasi Langsung)
 
-Ikuti langkah-langkah di bawah ini untuk menjalankan proyek di komputer lokal (local machine).
+Jalankan perintah berikut di terminal Anda untuk mengunduh dan menyiapkan proyek secara otomatis:
 
-### 1. Clone Repositori
 ```bash
+# 1. Clone & Install Dependencies
 git clone git@github.com:Erlangga4610/Portfolio-app.git
 cd Portfolio-app
-
 composer install
+npm install
 
+# 2. Setup Environment
+cp .env.example .env
+php artisan key:generate
+
+# 3.php artisan migrate --seed
+
+# 4. # Terminal 1
+php artisan serve
+
+# Terminal 2
+npm run dev
