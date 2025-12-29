@@ -64,7 +64,7 @@ export default function Certificates({ data }) {
                                     <p className="text-sm text-gray-400 mt-2 font-medium">{cert.issuer}</p>
                                 </div>
                                 <div className="mt-6 pt-4 border-t border-gray-800 flex items-center justify-between">
-                                    <div className="text-xs text-gray-500 font-mono">{new Date(cert.date_issued).toLocaleDateString('id-ID', { year: 'numeric', month: 'short' })}</div>
+                                    <div className="text-xs text-gray-500 font-mono">{new Date(cert.date_issued).toLocaleDateString('id-ID', { year: 'numeric', month: 'short', day: 'numeric' })}</div>
                                     <a href={cert.credential_url} target="_blank" className="text-xs font-semibold text-gray-300 hover:text-white flex items-center gap-1">Kredensial →</a>
                                 </div>
                             </div>

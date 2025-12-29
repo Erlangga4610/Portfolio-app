@@ -1,0 +1,41 @@
+[90m= [39m[34;4mIlluminate\Database\Eloquent\Collection[39;24m {#2100
+    [34mall[39m: [
+      [34;4mApp\Models\Project[39;24m {#6546
+        [34mid[39m: [35m3[39m,
+        [34mtitle[39m: "[32mWebsite Statis Sejarah & Informasi Real Madrid[39m",
+        [34mslug[39m: [36mnull[39m,
+        [34mdescription[39m: "[32mProject ini merupakan sebuah website statis yang berisi informasi tentang sejarah, piala, dan profil Klub Sepak Bola Real Madrid. Website ini dibuat untuk menampilkan konten informatif dan visual mengenai Real Madrid dalam format halaman web sederhana yang dapat diakses melalui browser. Repository ini juga memanfaatkan GitHub Pages untuk hosting halaman secara gratis.[39m",
+        [34mtech_stack[39m: "[32m"[\"HTML\",\"CSS\"]"[39m",
+        [34mimage_url[39m: "[32m/storage/projects/LNNgK3JV9jaqeY5ilU0YI7QQzgKGnhBHbRqGhpVB.png[39m",
+        [34mdemo_link[39m: "[32mhttps://erlangga4610.github.io/tugasweb.github.io/[39m",
+        [34mrepo_link[39m: "[32mhttps://github.com/Erlangga4610/tugasweb.github.io[39m",
+        [34mcreated_at[39m: "[32m2025-12-27 02:52:45[39m",
+        [34mupdated_at[39m: "[32m2025-12-27 04:26:04[39m",
+      },
+      [34;4mApp\Models\Project[39;24m {#6545
+        [34mid[39m: [35m5[39m,
+        [34mtitle[39m: "[32mReal-time Weather App[39m",
+        [34mslug[39m: [36mnull[39m,
+        [34mdescription[39m: "[32m"Platform monitoring cuaca real-time dengan integrasi API publik. Menampilkan data suhu dan kelembaban akurat untuk perencanaan aktivitas harian."[39m",
+        [34mtech_stack[39m: "[32m"[\"React\",\"Tailwind\",\"CSS\",\"Axios\",\"OpenWeatherMap API\"]"[39m",
+        [34mimage_url[39m: "[32m/storage/projects/E4s7Lnt6ulazIVwKWcoIOnfAV2JXT1qkEnvohtVL.png[39m",
+        [34mdemo_link[39m: "[32mhttps://github.com/Erlangga4610/weather-app[39m",
+        [34mrepo_link[39m: "[32mhttps://github.com/Erlangga4610/weather-app[39m",
+        [34mcreated_at[39m: "[32m2025-12-29 03:47:51[39m",
+        [34mupdated_at[39m: "[32m2025-12-29 03:54:41[39m",
+      },
+      [34;4mApp\Models\Project[39;24m {#6544
+        [34mid[39m: [35m6[39m,
+        [34mtitle[39m: "[32mDigital Library Management System (Atau bisa juga: "Sistem Inventaris Buku")[39m",
+        [34mslug[39m: [36mnull[39m,
+        [34mdescription[39m: "[32m"Menggantikan pencatatan manual dengan sistem digital yang cepat dan akurat. Memudahkan pengelolaan koleksi buku, penulis, dan penerbit."[39m",
+        [34mtech_stack[39m: "[32m"[\"Laravel\",\"MySQL\",\"Bootstrap\",\"Blade Template\",\"Tailwind\",\"Css\"]"[39m",
+        [34mimage_url[39m: "[32m/storage/projects/0qWAxsrAiXvVOAMbTILV4tUlAVQB8fYiU7RMVmus.png[39m",
+        [34mdemo_link[39m: "[32mhttps://github.com/Erlangga4610/buku-example.git[39m",
+        [34mrepo_link[39m: "[32mhttps://github.com/Erlangga4610/buku-example.git[39m",
+        [34mcreated_at[39m: "[32m2025-12-29 03:50:28[39m",
+        [34mupdated_at[39m: "[32m2025-12-29 03:51:50[39m",
+      },
+    ],
+  }
+
