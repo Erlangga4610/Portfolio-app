@@ -1,11 +1,17 @@
 import AuthenticatedLayout from '@/Layouts/AuthenticatedLayout';
-import { Head, useForm } from '@inertiajs/react';
+import { Head, useForm, usePage } from '@inertiajs/react';
+import { Transition } from '@headlessui/react';
+import { useRef } from 'react';
+import InputLabel from '@/Components/InputLabel';
+import TextInput from '@/Components/TextInput';
+import InputError from '@/Components/InputError';
+import PrimaryButton from '@/Components/PrimaryButton';
 
-export default function Edit({ auth, profile }) {
-    // FIX: Gunakan "Safe Navigation" (?. dan || '')
-    // Agar jika profile masih kosong (null), form tetap bisa dibuka tanpa error
-    const { data, setData, post, processing, errors } = useForm({
-        _method: 'Post',
+export default function Edit({ auth, profile, mustVerifyEmail, status }) {
+    
+    // --- 1. LOGIC FORM PORTFOLIO ---
+    const portfolioForm = useForm({
+        _method: 'POST',
         full_name: profile?.full_name || '',
         headline: profile?.headline || '',
         about: profile?.about || '',
@@ -16,104 +22,214 @@ export default function Edit({ auth, profile }) {
         cv: null,
     });
 
-    const submit = (e) => {
+    const submitPortfolio = (e) => {
         e.preventDefault();
-        post(route('admin.profile.update'));
+        portfolioForm.post(route('admin.profile.update'), { preserveScroll: true });
+    };
+
+    // --- 2. LOGIC FORM AKUN (NAMA & EMAIL) ---
+    const userForm = useForm({
+        name: auth.user.name,
+        email: auth.user.email,
+    });
+
+    const submitUser = (e) => {
+        e.preventDefault();
+        userForm.patch(route('profile.update'), { preserveScroll: true });
+    };
+
+    // --- 3. LOGIC FORM PASSWORD ---
+    const passwordInput = useRef();
+    const currentPasswordInput = useRef();
+    const passwordForm = useForm({
+        current_password: '',
+        password: '',
+        password_confirmation: '',
+    });
+
+    const submitPassword = (e) => {
+        e.preventDefault();
+        passwordForm.put(route('password.update'), {
+            preserveScroll: true,
+            onSuccess: () => passwordForm.reset(),
+            onError: (errors) => {
+                if (errors.password) {
+                    passwordForm.reset('password', 'password_confirmation');
+                    passwordInput.current.focus();
+                }
+                if (errors.current_password) {
+                    passwordForm.reset('current_password');
+                    currentPasswordInput.current.focus();
+                }
+            },
+        });
     };
 
     return (
-        <AuthenticatedLayout user={auth.user} header={<h2 className="font-semibold text-xl text-gray-800 leading-tight">Edit Profil Saya</h2>}>
+        <AuthenticatedLayout
+            user={auth.user}
+            header={<h2 className="font-semibold text-xl text-gray-800 leading-tight">Edit Profil Lengkap</h2>}
+        >
             <Head title="Edit Profile" />
 
-            <div className="py-12">
-                <div className="max-w-4xl mx-auto sm:px-6 lg:px-8">
+            <div className="py-12 space-y-8">
+                
+                {/* ==========================================
+                    BAGIAN 1: DATA PORTFOLIO (YANG TAMPIL DI WEB)
+                   ========================================== */}
+                <div className="max-w-7xl mx-auto sm:px-6 lg:px-8">
                     <div className="bg-white overflow-hidden shadow-sm sm:rounded-lg p-8">
-                        
+                        <header className="mb-6 border-b pb-4">
+                            <h2 className="text-lg font-medium text-gray-900">Data Portfolio</h2>
+                            <p className="mt-1 text-sm text-gray-600">
+                                Ini data yang akan dilihat orang lain di website portfolio kamu.
+                            </p>
+                        </header>
+
                         {/* Preview Foto */}
                         <div className="flex items-center gap-6 mb-8">
-                            <div className="w-24 h-24 rounded-full bg-gray-200 overflow-hidden border border-gray-300">
-                                {/* FIX: Pakai tanda tanya (?) di sini juga */}
+                            <div className="w-20 h-20 rounded-full bg-gray-200 overflow-hidden border border-gray-300">
                                 {profile?.avatar_url ? (
                                     <img src={profile.avatar_url} className="w-full h-full object-cover" alt="Profile" />
                                 ) : (
-                                    <div className="flex items-center justify-center h-full text-gray-400">No Img</div>
+                                    <div className="flex items-center justify-center h-full text-gray-400 text-xs">No Img</div>
                                 )}
                             </div>
                             <div>
-                                {/* FIX: Pakai tanda tanya (?) di sini */}
                                 <h3 className="text-lg font-bold text-gray-900">{profile?.full_name || 'Nama Belum Diisi'}</h3>
-                                <p className="text-gray-500">{profile?.headline || '-'}</p>
+                                <p className="text-gray-500 text-sm">{profile?.headline || '-'}</p>
                             </div>
                         </div>
 
-                        <form onSubmit={submit} encType="multipart/form-data" className="space-y-6">
-                            
+                        <form onSubmit={submitPortfolio} encType="multipart/form-data" className="space-y-6">
                             <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
                                 <div>
-                                    <label className="block text-sm font-medium text-gray-700">Nama Lengkap</label>
-                                    <input type="text" className="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:ring-indigo-500"
-                                        value={data.full_name} onChange={(e) => setData('full_name', e.target.value)} />
-                                    {errors.full_name && <p className="text-red-500 text-xs mt-1">{errors.full_name}</p>}
+                                    <InputLabel value="Nama Lengkap (Portfolio)" />
+                                    <TextInput className="mt-1 block w-full" value={portfolioForm.data.full_name} onChange={(e) => portfolioForm.setData('full_name', e.target.value)} />
+                                    <InputError message={portfolioForm.errors.full_name} className="mt-1" />
                                 </div>
                                 <div>
-                                    <label className="block text-sm font-medium text-gray-700">Headline / Jabatan</label>
-                                    <input type="text" className="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:ring-indigo-500"
-                                        value={data.headline} onChange={(e) => setData('headline', e.target.value)} />
-                                    {errors.headline && <p className="text-red-500 text-xs mt-1">{errors.headline}</p>}
+                                    <InputLabel value="Headline / Jabatan" />
+                                    <TextInput className="mt-1 block w-full" value={portfolioForm.data.headline} onChange={(e) => portfolioForm.setData('headline', e.target.value)} />
+                                    <InputError message={portfolioForm.errors.headline} className="mt-1" />
                                 </div>
                             </div>
 
                             <div>
-                                <label className="block text-sm font-medium text-gray-700">Tentang Saya (About)</label>
-                                <textarea className="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:ring-indigo-500 h-32"
-                                    value={data.about} onChange={(e) => setData('about', e.target.value)}></textarea>
-                                {errors.about && <p className="text-red-500 text-xs mt-1">{errors.about}</p>}
+                                <InputLabel value="Tentang Saya (About)" />
+                                <textarea className="mt-1 block w-full border-gray-300 focus:border-indigo-500 focus:ring-indigo-500 rounded-md shadow-sm h-32"
+                                    value={portfolioForm.data.about} onChange={(e) => portfolioForm.setData('about', e.target.value)}></textarea>
+                                <InputError message={portfolioForm.errors.about} className="mt-1" />
                             </div>
 
                             <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
                                 <div>
-                                    <label className="block text-sm font-medium text-gray-700">Email Publik</label>
-                                    <input type="email" className="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:ring-indigo-500"
-                                        value={data.public_email} onChange={(e) => setData('public_email', e.target.value)} />
+                                    <InputLabel value="Email Publik" />
+                                    <TextInput type="email" className="mt-1 block w-full" value={portfolioForm.data.public_email} onChange={(e) => portfolioForm.setData('public_email', e.target.value)} />
                                 </div>
                                 <div>
-                                    <label className="block text-sm font-medium text-gray-700">LinkedIn URL</label>
-                                    <input type="url" className="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:ring-indigo-500"
-                                        value={data.linkedin_url} onChange={(e) => setData('linkedin_url', e.target.value)} />
+                                    <InputLabel value="LinkedIn URL" />
+                                    <TextInput type="url" className="mt-1 block w-full" value={portfolioForm.data.linkedin_url} onChange={(e) => portfolioForm.setData('linkedin_url', e.target.value)} />
                                 </div>
                                 <div>
-                                    <label className="block text-sm font-medium text-gray-700">GitHub URL</label>
-                                    <input type="url" className="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:ring-indigo-500"
-                                        value={data.github_url} onChange={(e) => setData('github_url', e.target.value)} />
+                                    <InputLabel value="GitHub URL" />
+                                    <TextInput type="url" className="mt-1 block w-full" value={portfolioForm.data.github_url} onChange={(e) => portfolioForm.setData('github_url', e.target.value)} />
                                 </div>
                             </div>
 
                             <div className="grid grid-cols-1 md:grid-cols-2 gap-6 bg-gray-50 p-4 rounded-lg">
                                 <div>
-                                    <label className="block text-sm font-medium text-gray-700">Ganti Foto Profil</label>
-                                    <input type="file" className="mt-1 block w-full text-sm text-gray-500"
-                                        onChange={(e) => setData('avatar', e.target.files[0])} accept="image/*" />
-                                    {errors.avatar && <p className="text-red-500 text-xs mt-1">{errors.avatar}</p>}
+                                    <InputLabel value="Ganti Foto Profil" />
+                                    <input type="file" className="mt-1 block w-full text-sm text-gray-500" onChange={(e) => portfolioForm.setData('avatar', e.target.files[0])} accept="image/*" />
+                                    <InputError message={portfolioForm.errors.avatar} className="mt-1" />
                                 </div>
                                 <div>
-                                    <label className="block text-sm font-medium text-gray-700">Upload CV (PDF)</label>
-                                    <input type="file" className="mt-1 block w-full text-sm text-gray-500"
-                                        onChange={(e) => setData('cv', e.target.files[0])} accept="application/pdf" />
-                                    {/* FIX: Pakai tanda tanya (?) */}
+                                    <InputLabel value="Upload CV (PDF)" />
+                                    <input type="file" className="mt-1 block w-full text-sm text-gray-500" onChange={(e) => portfolioForm.setData('cv', e.target.files[0])} accept="application/pdf" />
                                     {profile?.cv_url && <a href={profile.cv_url} target="_blank" className="text-xs text-indigo-600 underline">Lihat CV Saat Ini</a>}
-                                    {errors.cv && <p className="text-red-500 text-xs mt-1">{errors.cv}</p>}
                                 </div>
                             </div>
 
-                            <div className="flex justify-end pt-4 border-t">
-                                <button type="submit" disabled={processing} className="px-6 py-2 bg-indigo-600 text-white rounded-md hover:bg-indigo-700 font-bold">
-                                    Simpan Perubahan
-                                </button>
+                            <div className="flex items-center gap-4">
+                                <PrimaryButton disabled={portfolioForm.processing}>Simpan Portfolio</PrimaryButton>
+                                <Transition show={portfolioForm.recentlySuccessful} enter="transition ease-in-out" enterFrom="opacity-0" leave="transition ease-in-out" leaveTo="opacity-0">
+                                    <p className="text-sm text-gray-600">Tersimpan.</p>
+                                </Transition>
                             </div>
                         </form>
                     </div>
                 </div>
-            </div>
+
+                {/* ==========================================
+                    BAGIAN 2 & 3: GRID LAYOUT (USER & PASSWORD)
+                   ========================================== */}
+                <div className="max-w-7xl mx-auto sm:px-6 lg:px-8 grid grid-cols-1 md:grid-cols-2 gap-8">
+                    
+                    {/* --- FORM UPDATE INFO LOGIN --- */}
+                    <div className="p-4 sm:p-8 bg-white shadow sm:rounded-lg">
+                        <header>
+                            <h2 className="text-lg font-medium text-gray-900">Akun Login</h2>
+                            <p className="mt-1 text-sm text-gray-600">Update nama akun dan email untuk login.</p>
+                        </header>
+
+                        <form onSubmit={submitUser} className="mt-6 space-y-6">
+                            <div>
+                                <InputLabel htmlFor="name" value="Nama Akun" />
+                                <TextInput id="name" className="mt-1 block w-full" value={userForm.data.name} onChange={(e) => userForm.setData('name', e.target.value)} required />
+                                <InputError message={userForm.errors.name} className="mt-2" />
+                            </div>
+
+                            <div>
+                                <InputLabel htmlFor="email" value="Email Login" />
+                                <TextInput id="email" type="email" className="mt-1 block w-full" value={userForm.data.email} onChange={(e) => userForm.setData('email', e.target.value)} required />
+                                <InputError message={userForm.errors.email} className="mt-2" />
+                            </div>
+
+                            <div className="flex items-center gap-4">
+                                <PrimaryButton disabled={userForm.processing} className="bg-gray-800">Update Akun</PrimaryButton>
+                                <Transition show={userForm.recentlySuccessful} enter="transition ease-in-out" enterFrom="opacity-0" leave="transition ease-in-out" leaveTo="opacity-0">
+                                    <p className="text-sm text-gray-600">Tersimpan.</p>
+                                </Transition>
+                            </div>
+                        </form>
+                    </div>
+
+                    {/* --- FORM UPDATE PASSWORD --- */}
+                    <div className="p-4 sm:p-8 bg-white shadow sm:rounded-lg">
+                        <header>
+                            <h2 className="text-lg font-medium text-gray-900">Ganti Password</h2>
+                            <p className="mt-1 text-sm text-gray-600">Pastikan akun aman dengan password kuat.</p>
+                        </header>
+
+                        <form onSubmit={submitPassword} className="mt-6 space-y-6">
+                            <div>
+                                <InputLabel htmlFor="current_password" value="Password Lama" />
+                                <TextInput id="current_password" ref={currentPasswordInput} value={passwordForm.data.current_password} onChange={(e) => passwordForm.setData('current_password', e.target.value)} type="password" className="mt-1 block w-full" />
+                                <InputError message={passwordForm.errors.current_password} className="mt-2" />
+                            </div>
+
+                            <div>
+                                <InputLabel htmlFor="password" value="Password Baru" />
+                                <TextInput id="password" ref={passwordInput} value={passwordForm.data.password} onChange={(e) => passwordForm.setData('password', e.target.value)} type="password" className="mt-1 block w-full" />
+                                <InputError message={passwordForm.errors.password} className="mt-2" />
+                            </div>
+
+                            <div>
+                                <InputLabel htmlFor="password_confirmation" value="Konfirmasi Password" />
+                                <TextInput id="password_confirmation" value={passwordForm.data.password_confirmation} onChange={(e) => passwordForm.setData('password_confirmation', e.target.value)} type="password" className="mt-1 block w-full" />
+                            </div>
+
+                            <div className="flex items-center gap-4">
+                                <PrimaryButton disabled={passwordForm.processing} className="bg-red-600 hover:bg-red-500">Ganti Password</PrimaryButton>
+                                <Transition show={passwordForm.recentlySuccessful} enter="transition ease-in-out" enterFrom="opacity-0" leave="transition ease-in-out" leaveTo="opacity-0">
+                                    <p className="text-sm text-gray-600">Tersimpan.</p>
+                                </Transition>
+                            </div>
+                        </form>
+                    </div>
+
+                </div>
+            </div>  
         </AuthenticatedLayout>
     );
 }
