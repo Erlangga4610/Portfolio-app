@@ -29,7 +29,13 @@ Route::get('/', [PortfolioController::class, 'index'])->name('home');
 |--------------------------------------------------------------------------
 */
 Route::get('/dashboard', function () {
-    return Inertia::render('Dashboard');
+    return Inertia::render('Dashboard', [
+        'counts' => [
+            'projects' => \App\Models\Project::count(),
+            'skills' => \App\Models\Skill::count(),
+            'certificates' => \App\Models\Certificate::count(),
+        ]
+    ]);
 })->middleware(['auth', 'verified'])->name('dashboard');
 
 /*
@@ -43,10 +49,9 @@ Route::middleware(['auth', 'verified'])->prefix('admin')->name('admin.')->group(
     Route::resource('certificates', CertificateController::class);
     Route::resource('skills', SkillController::class);
 
-    // Update Data Portfolio (Foto, CV, Headline) - Method POST
-    // URL: /admin/profile
-    Route::get('/profile', [AdminProfileController::class, 'edit'])->name('profile.edit.admin'); // Alias beda
-    Route::post('/profile', [AdminProfileController::class, 'update'])->name('profile.update.portfolio');
+    // Update Data Portfolio (Foto, CV, Headline)
+    // FIX: Nama route disederhanakan agar cocok dengan React "route('admin.profile.update')"
+    Route::post('/profile', [AdminProfileController::class, 'update'])->name('profile.update'); 
 });
 
 /*
@@ -56,11 +61,10 @@ Route::middleware(['auth', 'verified'])->prefix('admin')->name('admin.')->group(
 */
 Route::middleware('auth')->group(function () {
     
-    // --- FIX ERROR NYA DISINI ---
-    // Kita arahkan GET /profile ke halaman Edit milik Admin (yang lengkap)
+    // Menampilkan Halaman Edit (Pinjam tampilan dari Admin Controller agar lengkap)
     Route::get('/profile', [AdminProfileController::class, 'edit'])->name('profile.edit');
 
-    // Update Nama & Email (Pakai Controller User Biasa)
+    // Update Nama & Email (Pakai Controller User Biasa) -> route('profile.update')
     Route::patch('/profile', [UserProfileController::class, 'update'])->name('profile.update');
     
     // Hapus Akun

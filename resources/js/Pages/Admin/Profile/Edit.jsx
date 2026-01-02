@@ -9,9 +9,11 @@ import PrimaryButton from '@/Components/PrimaryButton';
 
 export default function Edit({ auth, profile, mustVerifyEmail, status }) {
     
-    // --- 1. LOGIC FORM PORTFOLIO ---
+    // ==========================================
+    // 1. LOGIC FORM PORTFOLIO (FOTO, CV, DLL)
+    // ==========================================
     const portfolioForm = useForm({
-        _method: 'POST',
+        _method: 'POST', // Wajib POST karena ada file upload
         full_name: profile?.full_name || '',
         headline: profile?.headline || '',
         about: profile?.about || '',
@@ -24,10 +26,16 @@ export default function Edit({ auth, profile, mustVerifyEmail, status }) {
 
     const submitPortfolio = (e) => {
         e.preventDefault();
-        portfolioForm.post(route('admin.profile.update'), { preserveScroll: true });
+        // PENTING: Route ini harus 'admin.profile.update' sesuai web.php
+        portfolioForm.post(route('admin.profile.update'), { 
+            preserveScroll: true,
+            onSuccess: () => console.log("Portfolio Updated!"),
+        });
     };
 
-    // --- 2. LOGIC FORM AKUN (NAMA & EMAIL) ---
+    // ==========================================
+    // 2. LOGIC FORM AKUN (NAMA & EMAIL LOGIN)
+    // ==========================================
     const userForm = useForm({
         name: auth.user.name,
         email: auth.user.email,
@@ -35,10 +43,15 @@ export default function Edit({ auth, profile, mustVerifyEmail, status }) {
 
     const submitUser = (e) => {
         e.preventDefault();
-        userForm.patch(route('profile.update'), { preserveScroll: true });
+        // PENTING: Route ini 'profile.update' (tanpa admin)
+        userForm.patch(route('profile.update'), { 
+            preserveScroll: true,
+        });
     };
 
-    // --- 3. LOGIC FORM PASSWORD ---
+    // ==========================================
+    // 3. LOGIC FORM PASSWORD
+    // ==========================================
     const passwordInput = useRef();
     const currentPasswordInput = useRef();
     const passwordForm = useForm({
@@ -74,9 +87,9 @@ export default function Edit({ auth, profile, mustVerifyEmail, status }) {
 
             <div className="py-12 space-y-8">
                 
-                {/* ==========================================
+                {/* ---------------------------------------------------
                     BAGIAN 1: DATA PORTFOLIO (YANG TAMPIL DI WEB)
-                   ========================================== */}
+                   --------------------------------------------------- */}
                 <div className="max-w-7xl mx-auto sm:px-6 lg:px-8">
                     <div className="bg-white overflow-hidden shadow-sm sm:rounded-lg p-8">
                         <header className="mb-6 border-b pb-4">
@@ -160,9 +173,9 @@ export default function Edit({ auth, profile, mustVerifyEmail, status }) {
                     </div>
                 </div>
 
-                {/* ==========================================
-                    BAGIAN 2 & 3: GRID LAYOUT (USER & PASSWORD)
-                   ========================================== */}
+                {/* ---------------------------------------------------
+                    BAGIAN 2 & 3: AKUN & PASSWORD (GRID)
+                   --------------------------------------------------- */}
                 <div className="max-w-7xl mx-auto sm:px-6 lg:px-8 grid grid-cols-1 md:grid-cols-2 gap-8">
                     
                     {/* --- FORM UPDATE INFO LOGIN --- */}
@@ -229,7 +242,7 @@ export default function Edit({ auth, profile, mustVerifyEmail, status }) {
                     </div>
 
                 </div>
-            </div>  
+            </div>
         </AuthenticatedLayout>
     );
 }
