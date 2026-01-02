@@ -2,14 +2,16 @@ import AuthenticatedLayout from '@/Layouts/AuthenticatedLayout';
 import { Head, useForm } from '@inertiajs/react';
 
 export default function Edit({ auth, profile }) {
+    // FIX: Gunakan "Safe Navigation" (?. dan || '')
+    // Agar jika profile masih kosong (null), form tetap bisa dibuka tanpa error
     const { data, setData, post, processing, errors } = useForm({
-        _method: 'POST', // Kita pakai POST untuk update file
-        full_name: profile.full_name,
-        headline: profile.headline,
-        about: profile.about,
-        public_email: profile.public_email,
-        linkedin_url: profile.linkedin_url,
-        github_url: profile.github_url,
+        _method: 'Post',
+        full_name: profile?.full_name || '',
+        headline: profile?.headline || '',
+        about: profile?.about || '',
+        public_email: profile?.public_email || '',
+        linkedin_url: profile?.linkedin_url || '',
+        github_url: profile?.github_url || '',
         avatar: null,
         cv: null,
     });
@@ -30,15 +32,17 @@ export default function Edit({ auth, profile }) {
                         {/* Preview Foto */}
                         <div className="flex items-center gap-6 mb-8">
                             <div className="w-24 h-24 rounded-full bg-gray-200 overflow-hidden border border-gray-300">
-                                {profile.avatar_url ? (
+                                {/* FIX: Pakai tanda tanya (?) di sini juga */}
+                                {profile?.avatar_url ? (
                                     <img src={profile.avatar_url} className="w-full h-full object-cover" alt="Profile" />
                                 ) : (
                                     <div className="flex items-center justify-center h-full text-gray-400">No Img</div>
                                 )}
                             </div>
                             <div>
-                                <h3 className="text-lg font-bold text-gray-900">{profile.full_name}</h3>
-                                <p className="text-gray-500">{profile.headline}</p>
+                                {/* FIX: Pakai tanda tanya (?) di sini */}
+                                <h3 className="text-lg font-bold text-gray-900">{profile?.full_name || 'Nama Belum Diisi'}</h3>
+                                <p className="text-gray-500">{profile?.headline || '-'}</p>
                             </div>
                         </div>
 
@@ -95,7 +99,8 @@ export default function Edit({ auth, profile }) {
                                     <label className="block text-sm font-medium text-gray-700">Upload CV (PDF)</label>
                                     <input type="file" className="mt-1 block w-full text-sm text-gray-500"
                                         onChange={(e) => setData('cv', e.target.files[0])} accept="application/pdf" />
-                                    {profile.cv_url && <a href={profile.cv_url} target="_blank" className="text-xs text-indigo-600 underline">Lihat CV Saat Ini</a>}
+                                    {/* FIX: Pakai tanda tanya (?) */}
+                                    {profile?.cv_url && <a href={profile.cv_url} target="_blank" className="text-xs text-indigo-600 underline">Lihat CV Saat Ini</a>}
                                     {errors.cv && <p className="text-red-500 text-xs mt-1">{errors.cv}</p>}
                                 </div>
                             </div>
